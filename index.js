@@ -10,22 +10,30 @@ async function send(msg) {
   });
 }
 
-async function run() {
-  const id = "132115148";
+async function check() {
+  try {
+    const id = "132115148";
 
-  const { data } = await axios.get(
-    https://web-api.av.by/offer-types/cars/price-statistics/offers/${id}
-  );
+    const { data } = await axios.get(
+      https://web-api.av.by/offer-types/cars/price-statistics/offers/${id}
+    );
 
-  const type = data?.medianPriceRange?.priceRangeType;
+    const type = data?.medianPriceRange?.priceRangeType;
 
-  if (type === "below_average" || type === "much_below_average") {
-    await send(`🔥 SNIPER FOUND
+    if (type === "below_average" || type === "much_below_average") {
+      await send(`🔥 SNIPER FOUND
 ${data.title.brand} ${data.title.model}
 💰 ${data.medianPriceRange.advertPriceUsd}$`);
-  } else {
-    await send("❌ пока нет выгодных");
+    }
+  } catch (e) {
+    console.log(e.message);
   }
 }
 
-run();
+// каждые 60 секунд
+setInterval(check, 60000);
+
+// первый запуск сразу
+check();
+
+console.log("bot running...");
