@@ -1,7 +1,7 @@
 const axios = require("axios");
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
+const BOT_TOKEN = process.env.8942319043;
+const CHAT_ID = process.env.5145537472;
 
 async function send(msg) {
   await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
