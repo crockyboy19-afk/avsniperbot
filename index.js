@@ -1,0 +1,31 @@
+const axios = require("axios");
+
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
+
+async function send(msg) {
+  await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    chat_id: CHAT_ID,
+    text: msg
+  });
+}
+
+async function run() {
+  const id = "132115148";
+
+  const { data } = await axios.get(
+    https://web-api.av.by/offer-types/cars/price-statistics/offers/${id}
+  );
+
+  const type = data?.medianPriceRange?.priceRangeType;
+
+  if (type === "below_average" || type === "much_below_average") {
+    await send(`🔥 SNIPER FOUND
+${data.title.brand} ${data.title.model}
+💰 ${data.medianPriceRange.advertPriceUsd}$`);
+  } else {
+    await send("❌ пока нет выгодных");
+  }
+}
+
+run();
