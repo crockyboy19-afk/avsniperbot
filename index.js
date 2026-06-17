@@ -1,26 +1,34 @@
 const axios = require("axios");
 
-const BOT_TOKEN = process.env.BOT_TOKEN || "PASTE_TOKEN_HERE";
+const cheerio = require("cheerio");
 
-const CHAT_ID = process.env.CHAT_ID || "5145537472";
+// 🔥 ВСТАВЬ СВОИ ДАННЫЕ
+
+const BOT_TOKEN = "PASTE_TOKEN_HERE";
+
+const CHAT_ID = "5145537472";
+
+// 🔎 что ищем (можешь менять)
+
+const URL =
+
+  "https://cars.av.by/volkswagen/tiguan?price_currency=2";
 
 async function send(msg) {
 
-  try {
+  await axios.post(
 
-    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+
+    {
 
       chat_id: CHAT_ID,
 
       text: msg,
 
-    });
+    }
 
-  } catch (e) {
-
-    console.log("Telegram error:", e.message);
-
-  }
+  );
 
 }
 
@@ -28,39 +36,54 @@ async function check() {
 
   try {
 
-    const url = "https://cars.av.by/volkswagen/tiguan/132115148";
-
-    const { data } = await axios.get(url, {
+    const { data } = await axios.get(URL, {
 
       headers: {
 
         "User-Agent":
 
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+
+      },
+
+    });
+
+    const $ = cheerio.load(data);
+
+    let found = false;
+
+    $("a").each((i, el) => {
+
+      const text = $(el).text().toLowerCase();
+
+      if (text.includes("ниже рынка")) {
+
+        found = true;
 
       }
 
     });
 
-    const isBelow = data.includes("ниже рынка");
+    console.log("scan done");
 
-    console.log("Check result:", isBelow);
+    if (found) {
 
-    if (isBelow) {
-
-      await send("🔥 SNIPER FOUND! Объявление ниже рынка!");
+      await send("🔥 AV.BY SNIPER: найдено объявление ниже рынка!");
 
     }
 
   } catch (e) {
 
-    console.log("Error:", e.message);
+    console.log("error:", e.message);
 
   }
 
 }
+
+// каждые 60 секунд
+
 setInterval(check, 60000);
 
 check();
 
-console.log("bot running...");
+console.log("bot started");
