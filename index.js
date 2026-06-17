@@ -25,37 +25,35 @@ async function send(msg) {
 }
 
 async function check() {
-
   try {
-
     const id = "132115148";
 
     const url = `https://web-api.av.by/offer-types/cars/price-statistics/offers/${id}`;
 
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+        "Accept": "application/json",
+        "Referer": "https://cars.av.by/"
+      },
+      timeout: 10000
+    });
 
     const type = data?.medianPriceRange?.priceRangeType;
 
     console.log("Price type:", type);
 
     if (type === "below_average" || type === "much_below_average") {
-
       await send(
-
         `🔥 SNIPER FOUND\n${data.title.brand} ${data.title.model}\n💰 ${data.medianPriceRange.advertPriceUsd}$`
-
       );
-
     }
 
   } catch (e) {
-
-    console.log("Error:", e.message);
-
+    console.log("Error:", e.response?.status || e.message);
   }
-
 }
-
 setInterval(check, 60000);
 
 check();
