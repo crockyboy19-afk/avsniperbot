@@ -25,34 +25,39 @@ async function send(msg) {
 }
 
 async function check() {
-  try {
-    const id = "132115148";
 
-    const url = `https://web-api.av.by/offer-types/cars/price-statistics/offers/${id}`;
+  try {
+
+    const url = "https://cars.av.by/volkswagen/tiguan/132115148";
 
     const { data } = await axios.get(url, {
+
       headers: {
+
         "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-        "Accept": "application/json",
-        "Referer": "https://cars.av.by/"
-      },
-      timeout: 10000
+
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+
+      }
+
     });
 
-    const type = data?.medianPriceRange?.priceRangeType;
+    const isBelow = data.includes("ниже рынка");
 
-    console.log("Price type:", type);
+    console.log("Check result:", isBelow);
 
-    if (type === "below_average" || type === "much_below_average") {
-      await send(
-        `🔥 SNIPER FOUND\n${data.title.brand} ${data.title.model}\n💰 ${data.medianPriceRange.advertPriceUsd}$`
-      );
+    if (isBelow) {
+
+      await send("🔥 SNIPER FOUND! Объявление ниже рынка!");
+
     }
 
   } catch (e) {
-    console.log("Error:", e.response?.status || e.message);
+
+    console.log("Error:", e.message);
+
   }
+
 }
 setInterval(check, 60000);
 
